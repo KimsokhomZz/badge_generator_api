@@ -35,3 +35,4 @@ badge_generator_api-*.tar
 npm-debug.log
 /assets/node_modules/
 
+.env

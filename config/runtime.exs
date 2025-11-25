@@ -1,4 +1,12 @@
 import Config
+import Dotenvy
+
+# Load .env file for dev/test environments
+
+source!([
+  Path.absname(".env"),
+  System.get_env()
+])
 
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the

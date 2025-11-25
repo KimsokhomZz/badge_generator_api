@@ -1,12 +1,33 @@
 import Config
+# Load .env so System.get_env/1 returns values when this file is evaluated
+if Code.ensure_loaded?(Dotenvy) do
+  Dotenvy.source!([
+    Path.absname(".env"),
+    System.get_env()
+  ])
+else
+  # Fallback: parse .env into System env so config can use it when Dotenvy isn't available yet
+  env_path = Path.expand("../.env", __DIR__)
+
+  if File.exists?(env_path) do
+    env_path
+    |> File.read!()
+    |> String.split("\n", trim: true)
+    |> Enum.each(fn line ->
+      case String.split(line, "=", parts: 2) do
+        [k, v] -> System.put_env(k, String.trim(v))
+        _ -> :ok
+      end
+    end)
+  end
+end
 
 # Configure your database
 config :badge_generator_api, BadgeGeneratorApi.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "badge_generator_api_dev",
-  stacktrace: true,
+  username: System.get_env("POSTGRES_USER"),
+  password: System.get_env("POSTGRES_PASSWORD"),
+  database: System.get_env("POSTGRES_DATABASE"),
+  hostname: System.get_env("POSTGRES_HOST"),
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
