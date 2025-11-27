@@ -14,14 +14,15 @@ defmodule BadgeGeneratorApi.Businesses.Business do
       password :password do
         identity_field(:email)
         hashed_password_field(:password_hash)
+        sign_in_tokens_enabled?(false)
       end
     end
 
-    tokens do
-      enabled?(true)
-      token_resource(BadgeGeneratorApi.Businesses.Token)
-      require_token_presence_for_authentication?(true)
-    end
+    # tokens do
+    #   enabled?(true)
+    #   token_resource(BadgeGeneratorApi.Businesses.Token)
+    #   require_token_presence_for_authentication?(true)
+    # end
   end
 
   attributes do
