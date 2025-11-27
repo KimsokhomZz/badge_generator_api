@@ -11,6 +11,8 @@ config :badge_generator_api,
   ecto_repos: [BadgeGeneratorApi.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :badge_generator_api, ash_domains: [BadgeGeneratorApi.Businesses]
+
 # Configures the endpoint
 config :badge_generator_api, BadgeGeneratorApiWeb.Endpoint,
   url: [host: "localhost"],
