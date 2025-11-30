@@ -1,5 +1,4 @@
 defmodule BadgeGeneratorApi.Repo do
-  use Ecto.Repo,
-    otp_app: :badge_generator_api,
-    adapter: Ecto.Adapters.Postgres
+  use AshPostgres.Repo,
+    otp_app: :badge_generator_api
 end

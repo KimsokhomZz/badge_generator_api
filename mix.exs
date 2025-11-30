@@ -45,6 +45,8 @@ defmodule BadgeGeneratorApi.MixProject do
       {:live_debugger, "~> 0.4", only: [:dev]},
       {:ash_admin, "~> 0.13"},
       {:ash_authentication_phoenix, "~> 2.0"},
+      {:bcryptrs, "~> 0.1.4"},
+      {:comeonin, "~> 5.5"},
       {:ash_authentication, "~> 4.0"},
       {:ash_postgres, "~> 2.0"},
       {:ash_phoenix, "~> 2.0"},

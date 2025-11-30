@@ -63,3 +63,28 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+config :badge_generator_api,
+  ash_domains: [
+    BadgeGeneratorApi.Accounts
+  ]
+
+# config/config.exs (Corrected to match your .env variable names)
+
+config :badge_generator_api, BadgeGeneratorApi.Repo,
+  # Mapped POSTGRES_DATABASE to database:
+  database: System.get_env("POSTGRES_DATABASE"),
+
+  # Mapped POSTGRES_USER to username:
+  username: System.get_env("POSTGRES_USER"),
+
+  # Mapped POSTGRES_PASSWORD to password:
+  password: System.get_env("POSTGRES_PASSWORD"),
+
+  # Mapped POSTGRES_HOST to hostname:
+  hostname: System.get_env("POSTGRES_HOST"),
+
+  # Assuming you have a POSTGRES_PORT in your .env or a default in another config
+  port: System.get_env("POSTGRES_PORT"),
+  # Assuming you want to keep this default
+  pool_size: 10
