@@ -20,6 +20,21 @@ defmodule BadgeGeneratorApiWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/api", BadgeGeneratorApiWeb do
+    pipe_through :api
+
+    scope "/business" do
+      post "/register", BusinessController, :register
+    end
+  end
+
+  # scope "/api", BadgeGeneratorApiWeb do
+  #   pipe_through [:api, BadgeGeneratorApiWeb.Plugs.ApiKeyAuth]
+
+  #   get "/badges", BadgeController, :index
+  #   post "/badges/award", BadgeController, :award
+  # end
+
   # Other scopes may use custom stacks.
   # scope "/api", BadgeGeneratorApiWeb do
   #   pipe_through :api

@@ -14,6 +14,7 @@ defmodule BadgeGeneratorApi.Businesses.BusinessAPIKey do
     attribute :api_key_hash, :string do
       sensitive?(true)
       allow_nil?(false)
+      constraints(min_length: 20)
     end
 
     attribute :is_active, :boolean do
@@ -21,7 +22,7 @@ defmodule BadgeGeneratorApi.Businesses.BusinessAPIKey do
     end
 
     attribute :expired_at, :utc_datetime do
-      allow_nil?(true)
+      allow_nil?(false)
     end
 
     create_timestamp(:created_at)

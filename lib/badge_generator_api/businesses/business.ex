@@ -1,28 +1,13 @@
 defmodule BadgeGeneratorApi.Businesses.Business do
   use Ash.Resource,
     domain: BadgeGeneratorApi.Businesses,
-    data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication]
+    data_layer: AshPostgres.DataLayer
+
+  # extensions: [AshAuthentication]
 
   postgres do
     table("businesses")
     repo(BadgeGeneratorApi.Repo)
-  end
-
-  authentication do
-    strategies do
-      password :password do
-        identity_field(:email)
-        hashed_password_field(:password_hash)
-        sign_in_tokens_enabled?(false)
-      end
-    end
-
-    # tokens do
-    #   enabled?(true)
-    #   token_resource(BadgeGeneratorApi.Businesses.Token)
-    #   require_token_presence_for_authentication?(true)
-    # end
   end
 
   attributes do
@@ -38,25 +23,34 @@ defmodule BadgeGeneratorApi.Businesses.Business do
       public?(true)
     end
 
-    attribute :password_hash, :string do
-      allow_nil?(true)
-      sensitive?(true)
-      writable?(true)
-    end
+    # attribute :password_hash, :string do
+    #   allow_nil?(true)
+    #   sensitive?(true)
+    #   writable?(true)
+    # end
 
-    attribute :password, :string do
-      sensitive?(true)
-      allow_nil?(false)
-      writable?(true)
-    end
+    # attribute :password, :string do
+    #   sensitive?(true)
+    #   allow_nil?(false)
+    #   writable?(true)
+    # end
 
     create_timestamp(:created_at)
     update_timestamp(:updated_at)
-  end
 
-  # calculations do
-  #   calculate(:password, :string, expr(nil))
-  # end
+    # Virtual field to return raw API key after creation
+    # attribute :raw_api_key, :string do
+    #   allow_nil?(true)
+    #   writable?(false)
+    #   public?(true)
+    # end
+    # attribute(:raw_api_key, :string,
+    #   persistent?: false,
+    #   allow_nil?: true,
+    #   writable?: false,
+    #   public?: true
+    # )
+  end
 
   identities do
     identity(:unique_email, [:email])
@@ -70,8 +64,39 @@ defmodule BadgeGeneratorApi.Businesses.Business do
   actions do
     defaults([:read, :destroy])
 
+    # create :register do
+    #   accept([:name, :email])
+
+    #   change(
+    #     after_action(fn changeset, business ->
+    #       # business is the created Business struct
+    #       case BadgeGeneratorApi.Businesses.APIKeyService.issue_api_key(business) do
+    #         {:ok, raw_key} ->
+    #           # attach raw key temporarily to return in JSON
+    #           {:ok, Map.put(business, :raw_api_key, raw_key)}
+
+    #         {:error, reason} ->
+    #           {:error, "Failed to issue API key: #{inspect(reason)}"}
+    #       end
+    #     end)
+    #   )
+    # end
     create :register do
-      accept([:name, :email, :password])
+      accept([:name, :email])
+
+      change(
+        after_action(fn changeset, business, _context ->
+          # business is the created Business struct
+          case BadgeGeneratorApi.Businesses.APIKeyService.issue_api_key(business) do
+            {:ok, raw_key} ->
+              # attach raw key temporarily to return in JSON
+              {:ok, Map.put(business, :raw_api_key, raw_key)}
+
+            {:error, reason} ->
+              {:error, "Failed to issue API key: #{inspect(reason)}"}
+          end
+        end)
+      )
     end
 
     update :update_profile do
