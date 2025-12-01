@@ -26,6 +26,37 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
     end
   end
 
+  # -------------------------------------------------------------------------------------- #
+  def index(conn, _params) do
+    case Ash.read(Business) do
+      {:ok, businesses} ->
+        json(conn, %{
+          status: "success",
+          # <-- This is where it's called
+          data: Enum.map(businesses, &serialize_business/1)
+        })
+
+      {:error, ash_error} ->
+        json(conn, %{
+          status: "error",
+          errors: serialize_ash_error(ash_error)
+        })
+    end
+  end
+
+  # --- NEW: Helper function to structure business data ---
+  defp serialize_business(business) do
+    %{
+      id: business.id,
+      name: business.name,
+      email: business.email,
+      created_at: business.created_at,
+      updated_at: business.updated_at
+    }
+  end
+
+  # -------------------------------------------------------------------------------------- #
+
   # serialize Ash errors into readable messages
   defp serialize_ash_error(%Ash.Error.Invalid{errors: errors}) do
     Enum.map(errors, fn

@@ -25,6 +25,9 @@ defmodule BadgeGeneratorApiWeb.Router do
 
     scope "/business" do
       post "/register", BusinessController, :register
+
+      get "/", BusinessController, :index
+      get "/:id", BusinessController, :show
     end
   end
 
