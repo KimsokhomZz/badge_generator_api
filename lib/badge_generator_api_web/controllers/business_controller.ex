@@ -51,6 +51,8 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
     %{message: inspect(other)}
   end
 
+  # error message when unauthorized get /me request
+
   def me(conn, _params) do
     case conn.assigns[:current_business] do
       nil ->
