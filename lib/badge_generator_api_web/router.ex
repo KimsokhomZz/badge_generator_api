@@ -14,6 +14,11 @@ defmodule BadgeGeneratorApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # protected API pipeline requiring API key authentication
+  pipeline :api_protected do
+    plug BadgeGeneratorApiWeb.Plugs.ApiKeyAuth
+  end
+
   scope "/", BadgeGeneratorApiWeb do
     pipe_through :browser
 
@@ -25,9 +30,12 @@ defmodule BadgeGeneratorApiWeb.Router do
 
     scope "/business" do
       post "/register", BusinessController, :register
+    end
 
-      get "/", BusinessController, :index
-      get "/:id", BusinessController, :show
+    # protected endpoints which require api key
+    scope "/business" do
+      pipe_through [:api_protected]
+      get "/me", BusinessController, :me
     end
   end
 

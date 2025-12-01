@@ -1,6 +1,5 @@
 defmodule BadgeGeneratorApiWeb.BusinessController do
   use BadgeGeneratorApiWeb, :controller
-
   alias BadgeGeneratorApi.Businesses.Business
 
   def register(conn, params) do
@@ -26,38 +25,7 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
     end
   end
 
-  # -------------------------------------------------------------------------------------- #
-  def index(conn, _params) do
-    case Ash.read(Business) do
-      {:ok, businesses} ->
-        json(conn, %{
-          status: "success",
-          # <-- This is where it's called
-          data: Enum.map(businesses, &serialize_business/1)
-        })
-
-      {:error, ash_error} ->
-        json(conn, %{
-          status: "error",
-          errors: serialize_ash_error(ash_error)
-        })
-    end
-  end
-
-  # --- NEW: Helper function to structure business data ---
-  defp serialize_business(business) do
-    %{
-      id: business.id,
-      name: business.name,
-      email: business.email,
-      created_at: business.created_at,
-      updated_at: business.updated_at
-    }
-  end
-
-  # -------------------------------------------------------------------------------------- #
-
-  # serialize Ash errors into readable messages
+  # helper function : serialize Ash errors into readable messages
   defp serialize_ash_error(%Ash.Error.Invalid{errors: errors}) do
     Enum.map(errors, fn
       %Ash.Error.Changes.InvalidAttribute{field: field, message: message} ->
@@ -81,5 +49,26 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
   # fallback for other Ash errors
   defp serialize_ash_error(other) do
     %{message: inspect(other)}
+  end
+
+  # error message when unauthorized get /me request
+
+  def me(conn, _params) do
+    case conn.assigns[:current_business] do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Unauthorized"})
+
+      business ->
+        conn
+        |> json(%{
+          data: %{
+            id: business.id,
+            name: business.name,
+            email: business.email
+          }
+        })
+    end
   end
 end
