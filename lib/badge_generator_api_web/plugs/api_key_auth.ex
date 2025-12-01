@@ -1,6 +1,5 @@
 defmodule BadgeGeneratorApiWeb.Plugs.ApiKeyAuth do
   import Plug.Conn
-  # alias BadgeGeneratorApi.Businesses.{BusinessAPIKey, Business}
   alias BadgeGeneratorApi.Businesses.BusinessAPIKey
   require Ash.Query
 

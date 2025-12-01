@@ -1,6 +1,5 @@
 defmodule BadgeGeneratorApiWeb.BusinessController do
   use BadgeGeneratorApiWeb, :controller
-
   alias BadgeGeneratorApi.Businesses.Business
 
   def register(conn, params) do
@@ -26,7 +25,7 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
     end
   end
 
-  # serialize Ash errors into readable messages
+  # helper function : serialize Ash errors into readable messages
   defp serialize_ash_error(%Ash.Error.Invalid{errors: errors}) do
     Enum.map(errors, fn
       %Ash.Error.Changes.InvalidAttribute{field: field, message: message} ->
@@ -50,5 +49,24 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
   # fallback for other Ash errors
   defp serialize_ash_error(other) do
     %{message: inspect(other)}
+  end
+
+  def me(conn, _params) do
+    case conn.assigns[:current_business] do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Unauthorized"})
+
+      business ->
+        conn
+        |> json(%{
+          data: %{
+            id: business.id,
+            name: business.name,
+            email: business.email
+          }
+        })
+    end
   end
 end
