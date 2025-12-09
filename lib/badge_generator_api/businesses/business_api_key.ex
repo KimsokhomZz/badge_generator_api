@@ -8,6 +8,7 @@ defmodule BadgeGeneratorApi.Businesses.BusinessAPIKey do
     repo(BadgeGeneratorApi.Repo)
   end
 
+  # --- ATTRIBUTES ---
   attributes do
     uuid_primary_key(:id)
 
@@ -28,10 +29,12 @@ defmodule BadgeGeneratorApi.Businesses.BusinessAPIKey do
     create_timestamp(:created_at)
   end
 
+  # --- RELATIONSHIPS ---
   relationships do
     belongs_to :business, BadgeGeneratorApi.Businesses.Business
   end
 
+  # --- ACTIONS ---
   actions do
     defaults([:read])
 
