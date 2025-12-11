@@ -55,10 +55,15 @@ defmodule BadgeGeneratorApi.Projects.Project do
     # GET /projects
     read :list do
       filter(expr(business_id == ^actor(:id)))
+
+      prepare(fn query, _ctx ->
+        Ash.Query.sort(query, [{:created_at, :desc}])
+      end)
     end
 
     # GET /projects/:id
     read :get do
+      primary?(true)
       get?(true)
     end
 
@@ -76,6 +81,8 @@ defmodule BadgeGeneratorApi.Projects.Project do
     end
 
     # DELETE /projects/:id
-    destroy(:delete)
+    destroy :delete do
+      primary?(true)
+    end
   end
 end
