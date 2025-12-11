@@ -14,6 +14,7 @@ defmodule BadgeGeneratorApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # protected API pipeline requiring API key authentication
   pipeline :api_protected do
     plug BadgeGeneratorApiWeb.Plugs.ApiKeyAuth
   end
