@@ -45,23 +45,6 @@ defmodule BadgeGeneratorApi.Businesses.Business do
   actions do
     defaults([:read, :destroy])
 
-    # create :register do
-    #   accept([:name, :email])
-
-    #   change(
-    #     after_action(fn changeset, business ->
-    #       # business is the created Business struct
-    #       case BadgeGeneratorApi.Businesses.APIKeyService.issue_api_key(business) do
-    #         {:ok, raw_key} ->
-    #           # attach raw key temporarily to return in JSON
-    #           {:ok, Map.put(business, :raw_api_key, raw_key)}
-
-    #         {:error, reason} ->
-    #           {:error, "Failed to issue API key: #{inspect(reason)}"}
-    #       end
-    #     end)
-    #   )
-    # end
     create :register do
       accept([:name, :email])
 
