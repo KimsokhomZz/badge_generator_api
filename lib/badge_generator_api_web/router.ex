@@ -48,6 +48,16 @@ defmodule BadgeGeneratorApiWeb.Router do
       put "/:id", ProjectController, :update
       delete "/:id", ProjectController, :delete
     end
+
+    # quest endpoints
+    scope "/quests" do
+      pipe_through [:api_protected]
+      get "/", QuestController, :list
+      post "/", QuestController, :create
+      get "/:id", QuestController, :show
+      put "/:id", QuestController, :update
+      delete "/:id", QuestController, :delete
+    end
   end
 
   # scope "/api", BadgeGeneratorApiWeb do
