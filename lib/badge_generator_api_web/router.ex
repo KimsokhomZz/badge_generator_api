@@ -28,14 +28,25 @@ defmodule BadgeGeneratorApiWeb.Router do
   scope "/api", BadgeGeneratorApiWeb do
     pipe_through :api
 
+    # public endpoints
     scope "/business" do
       post "/register", BusinessController, :register
     end
 
-    # protected endpoints which require api key
+    # protected endpoints (require api key)
     scope "/business" do
       pipe_through [:api_protected]
       get "/me", BusinessController, :me
+    end
+
+    # project endpoints
+    scope "/projects" do
+      pipe_through [:api_protected]
+      get "/", ProjectController, :list
+      post "/", ProjectController, :create
+      get "/:id", ProjectController, :show
+      put "/:id", ProjectController, :update
+      delete "/:id", ProjectController, :delete
     end
   end
 

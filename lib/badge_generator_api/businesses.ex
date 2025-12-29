@@ -4,5 +4,6 @@ defmodule BadgeGeneratorApi.Businesses do
   resources do
     resource(BadgeGeneratorApi.Businesses.Business)
     resource(BadgeGeneratorApi.Businesses.BusinessAPIKey)
+    resource(BadgeGeneratorApi.Projects.Project)
   end
 end

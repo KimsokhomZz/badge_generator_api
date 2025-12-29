@@ -6,10 +6,21 @@ defmodule BadgeGeneratorApiWeb.Plugs.ApiKeyAuth do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    with ["Bearer " <> raw_key] <- get_req_header(conn, "authorization"),
-         {:ok, business} <- get_business_by_api_key(raw_key) do
-      assign(conn, :current_business, business)
-    else
+    # IO.inspect(get_req_header(conn, "authorization"), label: "Authorization header")
+
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> raw_key] ->
+        case get_business_by_api_key(raw_key) do
+          {:ok, business} ->
+            # IO.inspect(business, label: "Authenticated business")
+            assign(conn, :current_business, business)
+
+          _ ->
+            conn
+            |> send_resp(401, "Unauthorized")
+            |> halt()
+        end
+
       _ ->
         conn
         |> send_resp(401, "Unauthorized")
