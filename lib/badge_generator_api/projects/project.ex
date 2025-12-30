@@ -4,6 +4,8 @@ defmodule BadgeGeneratorApi.Projects.Project do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  require Logger
+
   postgres do
     table("projects")
     repo(BadgeGeneratorApi.Repo)
@@ -36,12 +38,12 @@ defmodule BadgeGeneratorApi.Projects.Project do
   policies do
     # Business API key can ONLY access its own projects
     policy action_type(:read) do
-      # check that the project's business_id matches the actor's id
       authorize_if(expr(business_id == ^actor(:id)))
     end
 
     policy action_type(:create) do
       authorize_if(actor_present())
+      authorize_if(changing_attributes(business_id: [to: expr(^actor(:id))]))
     end
 
     policy action_type([:update, :destroy]) do

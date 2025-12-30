@@ -4,6 +4,7 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  require Logger
   alias BadgeGeneratorApi.Projects.Project
 
   postgres do
@@ -40,6 +41,8 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
     end
 
     create :create_quest do
+      IO.inspect("create_quest")
+
       accept([
         :title,
         :description,
@@ -78,7 +81,7 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
       authorize_if(expr(project.business_id == ^actor(:id)))
     end
 
-    policy action_type(:create) do
+    policy action(:create_quest) do
       authorize_if(BadgeGeneratorApi.Quests.ProjectOwnerCheck)
     end
 
