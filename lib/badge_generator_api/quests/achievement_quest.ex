@@ -11,6 +11,7 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
     repo(BadgeGeneratorApi.Repo)
   end
 
+  # --- ATTRIBUTES ---
   attributes do
     uuid_primary_key(:id)
     attribute(:title, :string, allow_nil?: false)
@@ -24,14 +25,17 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
     timestamps()
   end
 
+  # --- RELATIONSHIPS ---
   relationships do
     belongs_to :project, Project, allow_nil?: false
   end
 
+  # --- ACTIONS ---
   actions do
     defaults([:destroy])
 
     read :read do
+      primary?(true)
       prepare(build(sort: [inserted_at: :desc]))
     end
 
@@ -68,14 +72,14 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
     end
   end
 
+  # --- POLICIES ---
   policies do
-    # Only allow access if the quest belongs to a project the business owns
     policy action_type(:read) do
       authorize_if(expr(project.business_id == ^actor(:id)))
     end
 
     policy action_type(:create) do
-      authorize_if(actor_present())
+      authorize_if(BadgeGeneratorApi.Quests.ProjectOwnerCheck)
     end
 
     policy action_type([:update, :destroy]) do

@@ -9,6 +9,7 @@ defmodule BadgeGeneratorApi.Projects.Project do
     repo(BadgeGeneratorApi.Repo)
   end
 
+  # --- ATTRIBUTES ---
   attributes do
     uuid_primary_key(:id)
 
@@ -24,6 +25,7 @@ defmodule BadgeGeneratorApi.Projects.Project do
     update_timestamp(:updated_at)
   end
 
+  # --- RELATIONSHIPS ---
   relationships do
     belongs_to :business, BadgeGeneratorApi.Businesses.Business do
       allow_nil?(false)
@@ -31,7 +33,6 @@ defmodule BadgeGeneratorApi.Projects.Project do
   end
 
   # --- POLICIES ---
-  # Business API key can ONLY access its own projects
   policies do
     # Business API key can ONLY access its own projects
     policy action_type(:read) do
