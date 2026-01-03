@@ -4,8 +4,6 @@ defmodule BadgeGeneratorApi.Projects.Project do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
-  require Logger
-
   postgres do
     table("projects")
     repo(BadgeGeneratorApi.Repo)

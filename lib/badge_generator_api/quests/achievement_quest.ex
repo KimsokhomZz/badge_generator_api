@@ -4,7 +4,6 @@ defmodule BadgeGeneratorApi.Quests.AchievementQuest do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
-  require Logger
   alias BadgeGeneratorApi.Projects.Project
 
   postgres do

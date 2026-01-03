@@ -39,6 +39,16 @@ defmodule BadgeGeneratorApiWeb.Router do
       get "/me", BusinessController, :me
     end
 
+    # API_key endpoints
+    scope "/apikey" do
+      pipe_through [:api_protected]
+
+      get "/list", ApiKeyController, :list
+      post "/create", ApiKeyController, :create
+      post "/:id/rotate", ApiKeyController, :rotate
+      patch "/:id/disable", ApiKeyController, :revoke
+    end
+
     # project endpoints
     scope "/projects" do
       pipe_through [:api_protected]
