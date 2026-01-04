@@ -25,7 +25,7 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
     end
   end
 
-  # helper function : serialize Ash errors into readable messages
+  # helper function : serialize Ash errors into readable messages (invalid errors)
   defp serialize_ash_error(%Ash.Error.Invalid{errors: errors}) do
     Enum.map(errors, fn
       %Ash.Error.Changes.InvalidAttribute{field: field, message: message} ->
@@ -36,6 +36,7 @@ defmodule BadgeGeneratorApiWeb.BusinessController do
     end)
   end
 
+  # helper function : serialize Ash errors into readable messages (unknown errors)
   defp serialize_ash_error(%Ash.Error.Unknown{errors: errors}) do
     Enum.map(errors, fn
       %Ash.Error.Unknown.UnknownError{field: field, error: msg} ->

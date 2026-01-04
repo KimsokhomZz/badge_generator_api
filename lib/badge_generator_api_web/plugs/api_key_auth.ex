@@ -6,47 +6,53 @@ defmodule BadgeGeneratorApiWeb.Plugs.ApiKeyAuth do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    # IO.inspect(get_req_header(conn, "authorization"), label: "Authorization header")
-
     case get_req_header(conn, "authorization") do
-      ["Bearer " <> raw_key] ->
-        case get_business_by_api_key(raw_key) do
+      ["Bearer " <> full_key] ->
+        case verify_api_key(full_key) do
           {:ok, business} ->
-            # IO.inspect(business, label: "Authenticated business")
             assign(conn, :current_business, business)
 
           _ ->
-            conn
-            |> send_resp(401, "Unauthorized")
-            |> halt()
+            unauthorized(conn)
         end
 
       _ ->
-        conn
-        |> send_resp(401, "Unauthorized")
-        |> halt()
+        unauthorized(conn)
     end
   end
 
-  defp get_business_by_api_key(raw_key) do
-    hash =
-      :crypto.hash(:sha256, raw_key)
-      |> Base.encode16(case: :lower)
+  defp verify_api_key("bg_" <> rest) do
+    # Split the key into ID and Secret
+    with [id, secret] <- String.split(rest, "_", parts: 2),
+         {:ok, key_record} <- fetch_active_key(id),
+         true <- key_record != nil do
+      if Bcrypt.verify_pass(secret, key_record.hashed_key) do
+        {:ok, key_record.business}
+      else
+        {:error, :unauthorized}
+      end
+    else
+      _ ->
+        {:error, :unauthorized}
+    end
+  end
 
+  defp verify_api_key(_), do: {:error, :unauthorized}
+
+  defp fetch_active_key(id) do
     now = DateTime.utc_now()
 
-    query =
-      Ash.Query.for_read(BusinessAPIKey, :read)
-      |> Ash.Query.filter(
-        api_key_hash == ^hash and
-          is_active == true and
-          (is_nil(expired_at) or expired_at >= ^now)
-      )
-      |> Ash.Query.load(:business)
+    BusinessAPIKey
+    |> Ash.Query.filter(
+      id == ^id and
+        is_active == true and
+        expired_at > ^now
+    )
+    |> Ash.Query.load(:business)
+    |> Ash.read_one(authorize?: false)
+  end
 
-    case Ash.read(query) do
-      {:ok, [key]} -> {:ok, key.business}
-      _ -> {:error, :unauthorized}
-    end
+  defp unauthorized(conn) do
+    conn |> send_resp(401, "Unauthorized") |> halt()
   end
 end

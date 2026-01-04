@@ -9,6 +9,7 @@ defmodule BadgeGeneratorApi.Projects.Project do
     repo(BadgeGeneratorApi.Repo)
   end
 
+  # --- ATTRIBUTES ---
   attributes do
     uuid_primary_key(:id)
 
@@ -24,6 +25,7 @@ defmodule BadgeGeneratorApi.Projects.Project do
     update_timestamp(:updated_at)
   end
 
+  # --- RELATIONSHIPS ---
   relationships do
     belongs_to :business, BadgeGeneratorApi.Businesses.Business do
       allow_nil?(false)
@@ -31,16 +33,15 @@ defmodule BadgeGeneratorApi.Projects.Project do
   end
 
   # --- POLICIES ---
-  # Business API key can ONLY access its own projects
   policies do
     # Business API key can ONLY access its own projects
     policy action_type(:read) do
-      # check that the project's business_id matches the actor's id
       authorize_if(expr(business_id == ^actor(:id)))
     end
 
     policy action_type(:create) do
       authorize_if(actor_present())
+      authorize_if(changing_attributes(business_id: [to: expr(^actor(:id))]))
     end
 
     policy action_type([:update, :destroy]) do
